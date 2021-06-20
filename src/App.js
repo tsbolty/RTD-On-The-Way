@@ -1,29 +1,33 @@
-import React, { useState } from 'react';
-import './App.css';
-import MyComponent from './components/MyComponent';
+import React, { useEffect, useState } from "react";
+import GoogleMap from "./components/GoogleMap";
 
 function App() {
-  const [stateName, setStateName] = useState("")
-  const [hungry, setHungry] = useState(false)
+	const [center, setCenter] = useState({
+		lat: 59.95,
+		lng: 30.33,
+		userLocation: false
+	});
+	const [markers, setMarkers] = useState([{ lat: 39.68725, lng: -104.95716 }]);
 
-  const handleInputChange = event => {
-    // const {name, value} = event.target;
-    // setStateName({ ...stateName, [name]: value})
-    setStateName(event.target.value)
-  }
+	useEffect(
+		() =>
+			navigator.geolocation.getCurrentPosition((location) =>
+				setCenter({
+					lat: location.coords.latitude,
+					lng: location.coords.longitude,
+					userLocation: true
+				})
+			),
+		[]
+	);
 
-  const handleCheck = e => {
-    setHungry(!hungry)
-  }
-
-  return (
-    <div className="App">
-      <h2>hello</h2>
-      <input type="checkbox" onClick={handleCheck} />
-      <input placeholder="type here" name="key" onChange={handleInputChange}/>
-      <MyComponent fullName={stateName} hungry={true} />
-    </div>
-  );
+	return (
+		<div>
+			{center.userLocation ? (
+				<GoogleMap center={center} zoom={12} markers={markers} />
+			) : null}
+		</div>
+	);
 }
 
 export default App;
