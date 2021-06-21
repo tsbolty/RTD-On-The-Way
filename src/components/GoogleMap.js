@@ -10,10 +10,13 @@ const GoogleMap = (props) => {
 				bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_API_KEY }}
 				defaultCenter={props.center}
 				defaultZoom={props.zoom}>
-				<LocationOnIcon lat={props.center.lat} lng={props.center.lng} />
-				{props.markers.map((marker) => (
-					<LocationOnIcon lat={marker.lat} lng={marker.lng} />
-				))}
+				{/* {props.markers.map((marker) => ( */}
+				<LocationOnIcon lat={props.origin.lat} lng={props.origin.lng} />
+				<LocationOnIcon
+					lat={props.destination.lat}
+					lng={props.destination.lng}
+				/>
+				{/* ))} */}
 			</GoogleMapReact>
 		</div>
 	);
