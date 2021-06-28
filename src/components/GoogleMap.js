@@ -11,10 +11,7 @@ const GoogleMap = (props) => {
 				defaultCenter={props.center}
 				defaultZoom={props.zoom}>
 				{props.markers.map((marker) => (
-					<LocationOnIcon
-						lat={marker.coordinates[1]}
-						lng={marker.coordinates[0]}
-					/>
+					<LocationOnIcon key={marker.lat} lat={marker.lat} lng={marker.lon} />
 				))}
 			</GoogleMapReact>
 		</div>
