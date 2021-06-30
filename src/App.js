@@ -28,8 +28,8 @@ function App() {
 	}, []);
 
 	const handleSearch = async () => {
-		setStops(routing.getStops(lineChosen, origin, destination));
-
+		const chosenStops = routing.getStops(lineChosen, origin, destination);
+		setStops(chosenStops);
 		let results = [];
 		const allData = await stops.map(async (stop) => {
 			return routing
@@ -44,15 +44,15 @@ function App() {
 		});
 		Promise.all(allData).then((values) => {
 			values.forEach((value) => {
-				const objects = value.map((obj) =>
-					results.push({
-						name: obj.name,
-						lat: obj.geometry.location.lat,
-						lon: obj.geometry.location.lng
-					})
-				);
+				const objects = value.map((obj) => ({
+					name: obj.name,
+					placeId: obj.place_id,
+					coordinates: [obj.geometry.location.lng, obj.geometry.location.lat],
+					type: "result"
+				}));
+
 				const filteredObjects = objects.filter(
-					(item) => item.name && item.lat && item.lon
+					(item) => item.name && item.coordinates[0] && item.coordinates[1]
 				);
 				results.push(...filteredObjects);
 			});
@@ -77,7 +77,10 @@ function App() {
 					<>
 						<div style={{ display: "flex" }}>
 							<h2>Origin</h2>
-							<select onChange={(e) => setOrigin(e.target.value)}>
+							<select
+								onChange={(e) => setOrigin(e.target.value)}
+								value={origin}>
+								<option value=''>Select</option>
 								{routing.getLine(lineChosen).map((station) => (
 									<option
 										key={Math.floor(Math.random() * 100000)}
@@ -92,6 +95,7 @@ function App() {
 							<select
 								onChange={(e) => setDestination(e.target.value)}
 								value={destination}>
+								<option value=''>Select</option>
 								{require(`./utils/${lineChosen}Line.json`).map((station) => (
 									<option
 										key={Math.floor(Math.random() * 100000)}
@@ -111,6 +115,7 @@ function App() {
 					<select
 						onChange={(e) => setKeywordSearch(e.target.value)}
 						value={keywordSearch}>
+						<option>Select</option>
 						<option value='gas_station'>Gas Station</option>
 						<option value='atm'>ATM</option>
 						<option value='supermarket'>Grocery Store</option>
@@ -127,8 +132,8 @@ function App() {
 					<select
 						onChange={(e) =>
 							setDistanceSearch(Math.floor(parseInt(e.target.value) * 80.4672))
-						}
-						value={distanceSearch}>
+						}>
+						<option>Select</option>
 						<option value={1}>1</option>
 						<option value={2}>2</option>
 						<option value={3}>3</option>
@@ -150,7 +155,11 @@ function App() {
 			) : null}
 			<div>
 				{center.userLocation ? (
-					<GoogleMap center={center} zoom={12} markers={markers} />
+					<GoogleMap
+						center={center}
+						zoom={12}
+						markers={[...markers, ...stops]}
+					/>
 				) : null}
 			</div>
 		</div>

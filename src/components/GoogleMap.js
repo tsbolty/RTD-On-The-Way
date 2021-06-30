@@ -11,7 +11,18 @@ const GoogleMap = (props) => {
 				defaultCenter={props.center}
 				defaultZoom={props.zoom}>
 				{props.markers.map((marker) => (
-					<LocationOnIcon key={marker.lat} lat={marker.lat} lng={marker.lon} />
+					<div lat={marker.coordinates[1]} lng={marker.coordinates[0]}>
+						{marker.type === "result" ? (
+							<a
+								href={`https://www.google.com/maps/place/?q=place_id:${marker.placeId}`}
+								target='_blank'
+								rel='noreferrer'>
+								<LocationOnIcon color='primary' />
+							</a>
+						) : (
+							<LocationOnIcon color='secondary' />
+						)}
+					</div>
 				))}
 			</GoogleMapReact>
 		</div>
