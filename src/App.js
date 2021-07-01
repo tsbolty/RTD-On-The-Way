@@ -43,18 +43,29 @@ function App() {
 				.catch((err) => console.log(err));
 		});
 		Promise.all(allData).then((values) => {
+			if (!values) {
+				alert("No results found");
+				return;
+			}
 			values.forEach((value) => {
-				const objects = value.map((obj) => ({
-					name: obj.name,
-					placeId: obj.place_id,
-					coordinates: [obj.geometry.location.lng, obj.geometry.location.lat],
-					type: "result"
-				}));
+				const objects =
+					(value &&
+						value.map((obj) => ({
+							name: obj.name,
+							placeId: obj.place_id,
+							coordinates: [
+								obj.geometry.location.lng,
+								obj.geometry.location.lat
+							],
+							address: obj.vicinity,
+							type: "result"
+						}))) ||
+					[];
 
-				const filteredObjects = objects.filter(
-					(item) => item.name && item.coordinates[0] && item.coordinates[1]
-				);
-				results.push(...filteredObjects);
+				// const filteredObjects = objects.filter(
+				// 	(item) => item.name && item.coordinates[0] && item.coordinates[1]
+				// );
+				results.push(...objects);
 			});
 			setMarkers(results);
 		});
