@@ -1,6 +1,6 @@
 import React from "react";
 import GoogleMapReact from "google-map-react";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
+import LocationModal from "./Modal";
 
 const GoogleMap = (props) => {
 	return (
@@ -12,16 +12,10 @@ const GoogleMap = (props) => {
 				defaultZoom={props.zoom}>
 				{props.markers.map((marker) => (
 					<div lat={marker.coordinates[1]} lng={marker.coordinates[0]}>
-						{marker.type === "result" ? (
-							<a
-								href={`https://www.google.com/maps/place/?q=place_id:${marker.placeId}`}
-								target='_blank'
-								rel='noreferrer'>
-								<LocationOnIcon color='primary' />
-							</a>
-						) : (
-							<LocationOnIcon color='secondary' />
-						)}
+						<LocationModal
+							locationInfo={marker}
+							color={marker.type === "result" ? "primary" : "secondary"}
+						/>
 					</div>
 				))}
 			</GoogleMapReact>
