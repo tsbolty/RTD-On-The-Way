@@ -51,30 +51,36 @@ function App() {
 					stop.coordinates[1],
 					stop.coordinates[0]
 				)
-				.then((res) => res.data.results)
+				.then((res) => {
+					const results = res.data.results.filter(
+						(item) => Object.entries(item).length
+					);
+					return results.map((item) => ({
+						...item,
+						closestStation: stop.name
+					}));
+				})
 				.catch((err) => console.log(err));
 		});
 		Promise.all(allData).then((values) => {
-			console.log(values);
 			// if (values.every((value) => !Object.entries(value).length)) {
 			// 	console.log("No results found");
 			// 	return;
 			// }
 			values.forEach((value) => {
+				if (!value.length) {
+					return;
+				}
 				console.log(value);
 				const objects =
-					(value &&
-						value.map((obj) => ({
-							name: obj.name,
-							placeId: obj.place_id,
-							coordinates: [
-								obj.geometry.location.lng,
-								obj.geometry.location.lat
-							],
-							address: obj.vicinity,
-							type: "result"
-						}))) ||
-					[];
+					value.map((obj) => ({
+						name: obj.name,
+						placeId: obj.place_id,
+						coordinates: [obj.geometry.location.lng, obj.geometry.location.lat],
+						address: obj.vicinity,
+
+						type: "result"
+					})) || [];
 
 				results.push(...objects);
 			});
@@ -86,13 +92,13 @@ function App() {
 		<div>
 			<Search state={state} setState={setState} handleSearch={handleSearch} />
 			<div>
-				{state.center.userLocation ? (
-					<GoogleMap
-						center={state.center}
-						zoom={12}
-						markers={[...state.markers, ...state.stops]}
-					/>
-				) : null}
+				{/* {state.center.userLocation ? ( */}
+				<GoogleMap
+					center={state.center}
+					zoom={12}
+					markers={[...state.markers, ...state.stops]}
+				/>
+				{/* ) : null} */}
 			</div>
 		</div>
 	);
